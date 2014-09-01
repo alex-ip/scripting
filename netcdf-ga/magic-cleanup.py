@@ -34,6 +34,8 @@ for currentFile in fileList:
                 try:
                     numbers[np.isclose(numbers, magicErrorNumber)] = np.nan
                     elevation[i:i+5000]=numbers
+                    elevation.errors="True"
+                    print "...errors found"
                 except:
                     pass
 
