@@ -35,6 +35,9 @@ for root, subFolders, files in os.walk("/g/data1/rr1/"):
         inputfile = root + os.sep + 'prj.adf'
         prettyname = root.replace("/g/data1/rr1/","").replace("/","_").replace(" ", "_") + '.nc'
         outputfullname = outputdir + os.path.sep + prettyname
+        if os.path.isfile(outputfullname):
+            continue
+        
         print gdal_command + [inputfile, outputfullname]
         subprocess.check_call(gdal_command + [inputfile, outputfullname])
         for operation in inPlaceCleanup:
