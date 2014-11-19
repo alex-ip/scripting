@@ -21,6 +21,9 @@ import numpy as np
 fileList = sorted(glob.glob('*.nc4'))
 
 for currentFile in fileList:
+    fileMax = np.NINF
+    fileMin = np.inf
+
     print 'Current File - ', currentFile
     error = False
     dataSet = netCDF4.Dataset(currentFile, 'r+', format='NETCDF4')
@@ -30,15 +33,27 @@ for currentFile in fileList:
 
         for i in range(0, elevation.shape[0], 5000):
             numbers = elevation[i:i+5000]
+            currentMax = np.maximum(numbers)
+            if currentMax > fileMax:
+                fileMax = currentMax
+            
+            currentMin = np.minimum(numbers)
+            if currentMin < fileMin:
+                fileMin = currentMin
+            
             if np.any(numbers==magicErrorNumber):
                 try:
                     numbers[np.isclose(numbers, magicErrorNumber)] = np.nan
                     elevation[i:i+5000]=numbers
+                    elevation.errors="True"
+                    print "...errors found"
                 except:
                     pass
 
         print ' - cleaning complete'
         elevation.cleaned="True"
+        elevation.actual_min = fileMin
+        elevation.actual_max = fileMax
     else:
         print ' - already cleaned'
 

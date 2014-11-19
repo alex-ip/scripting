@@ -35,8 +35,12 @@ outputdir = "/g/data1/rr1/conversions/newconvert"
 for root, subFolders, files in os.walk("/g/data1/rr1/Elevation/1secSRTM_DEMs_v1.0/"):
     if 'prj.adf' in files:
         inputfile = root
-        prettyname = root.replace("/g/data1/rr1/","").replace("/","_")
+
+        prettyname = root.replace("/g/data1/rr1/","").replace("/","_").replace(" ", "_") + '.nc'
         outputfullname = outputdir + os.path.sep + prettyname
+        if os.path.isfile(outputfullname):
+            continue
+        
         print gdal_command + [inputfile, outputfullname]
         subprocess.check_call(gdal_command + [inputfile, outputfullname])
         for operation in inPlaceCleanup:
