@@ -7,6 +7,10 @@ Created on Fri Jul 25 13:09:56 2014
 import os, subprocess
 
 '''gdal_translate w001001.adf -of netCDF -co FORMAT=NC4C -co COMPRESS=DEFLATE ~/BremerBasin-50m-WGS84UTM50S.nc4
+
+NOTE: this is using compression - to disable compression remove the 
+compression options from the list below
+
 '''
 gdal_command = ['gdal_translate', \
                 '-of', 'netCDF', \
@@ -25,7 +29,7 @@ inPlaceCleanup = [
             ['ncatted', '-h', '-O', '-a', 'long_name,elevation,o,c,elevation', ], \
             ['ncatted', '-h', '-O', '-a', 'positive,elevation,a,c,"up"', ], \
             ['ncatted', '-h', '-O', '-a', 'units-uri,elevation,a,c,"http://www.opengis.net/def/uom/OGC/1.0/metre"', ], \
-            ['ncatted', '-h', '-O', '-a', 'units-uri,elevation,a,c,"metre"', ], \
+            ['ncatted', '-h', '-O', '-a', 'units,elevation,a,c,"metre"', ], \
             ['ncatted', '-h', '-O', '-a', 'vrs-uri,elevation,a,c,"http://www.opengis.net/def/crs/EPSG/0/5773"', ], \
             ['ncatted', '-h', '-O', '-a', 'vrs,elevation,a,c,"EGM96"', ], \
           ]
@@ -46,4 +50,8 @@ for root, subFolders, files in os.walk("/g/data1/rr1/Elevation/1secSRTM_DEMs_v1.
         for operation in inPlaceCleanup:
             print operation + [outputfullname]
             subprocess.check_call(operation + [outputfullname])
+        ''' NOTE:
+        this makes a copy of the file with chunking enabled on the lat/lon axis
+        this is hard coded and will not work if the axis are not called lat lon
+        please customise where required'''
         subprocess.check_call(['nccopy', '-d', '2', '-c', 'lat/128,lon/128', outputfullname,  outputfullname+'.128-128.nc'])
